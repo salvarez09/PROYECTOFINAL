@@ -1,0 +1,121 @@
+---SCRIPT DEL PROYECTO FINAL SIDNEY ALVAREZ CASTRO-----
+CREATE DATABASE PROYECTOFINAL
+
+---------------------------------------------- TABLA DE TRANSACCION -----------------------------------------------------------
+
+CREATE TABLE TRANSACCION
+(
+	CODIGO INT IDENTITY(1,1) PRIMARY KEY,
+	NOMBRE VARCHAR(30),
+	CORREO VARCHAR(30)unique,
+	CLAVE VARCHAR(30),
+	TIPO NVARCHAR(20) CHECK (TIPO = 'Ingreso' or TIPO = 'Gasto'),
+	DESCRIPCION VARCHAR(50),
+	FECHA DATETIME,
+	MONTO MONEY
+)
+
+ --INGRESAR REGISTROS--
+--INSERT INTO TRANSACCION (NOMBRE, CORREO, TIPO, DESCRIPCION, FECHA, MONTO)
+--VALUES ('Ingreso', 'Pago quincenal', '3-12-2022', 250000),
+	  -- ('Gasto', 'Arreglo de computadora', '3-12-2022', 15000),
+	 --  ('Ingreso', 'Intereses de ahorros', '4-12-2022', 80000)
+
+--SELECT * FROM TRANSACCION
+
+---------------------------------------------- TABLA DE USUARIOS --------------------------------------------------------------
+
+
+
+--------------------------------------------- FUNCIONES P.ALMACENADOS -------------------------------------------------------------
+
+--SELECT TIPO, DESCRIPCION, FECHA, MONTO from TRANSACCION
+--INNER JOIN USUARIO ON USUARIO.CODIGO = TRANSACCION.CODIGO
+
+ALTER PROCEDURE AGREGARUSUARIOS
+	@NOMBRE varchar(30),
+	@CORREO varchar(30),
+	@CLAVE varchar(30),
+	@TIPO NVARCHAR(20),
+	@DESCRIPCION VARCHAR(50),
+	@FECHA DATETIME,
+	@MONTO MONEY
+
+ AS
+	BEGIN
+		INSERT INTO TRANSACCION values (@NOMBRE, @CORREO, @CLAVE, @TIPO, @DESCRIPCION, @FECHA, @MONTO)
+	END 
+
+CREATE PROCEDURE LISTARUSUARIOS
+ AS
+	BEGIN
+		SELECT NOMBRE, CORREO, CLAVE, TIPO, DESCRIPCION, FECHA, MONTO FROM TRANSACCION
+	END 
+
+CREATE PROCEDURE ELIMINARUSUARIOS
+	@NOMBRE varchar(30)
+ AS
+	BEGIN
+		DELETE TRANSACCION WHERE NOMBRE = @NOMBRE
+	END 
+
+CREATE PROCEDURE ACTUALIZARUSUARIOS 
+	@NOMBRE varchar(30),
+	@CORREO varchar(30),
+	@CLAVE varchar(30),
+	@TIPO NVARCHAR(20),
+	@DESCRIPCION VARCHAR(50),
+	@FECHA DATETIME,
+	@MONTO MONEY
+	
+ AS
+	BEGIN
+		UPDATE TRANSACCION SET CORREO = @CORREO, CLAVE = @CLAVE, TIPO = @TIPO, DESCRIPCION = @DESCRIPCION, FECHA = @FECHA, MONTO=@MONTO WHERE NOMBRE = @NOMBRE
+ END
+
+EXEC AGREGARUSUARIOS 'Ana', 'anaabuela@icloud.com', '123', 'Ingreso', 'Pago de horas laboradas', '12-5-2022', 5000
+EXEC AGREGARUSUARIOS 'Admin', 'admin@icloud.com', '456', 'Gasto', 'Pago de recibo', '12-5-2022', 15000
+EXEC AGREGARUSUARIOS 'Pedro', 'pedroabue@icloud.com', '1234', 'Ingreso', 'Pago de salario', '12-5-2022', 1500000
+EXEC ELIMINARUSUARIOS 'Pedro'
+EXEC ACTUALIZARUSUARIOS 'Pedro', 'pedroabue@icloud.com', '1234', 'Ingreso', 'Pago de salario', '12-5-2022', 1500000
+EXEC LISTARUSUARIOS 
+
+
+SELECT * FROM TRANSACCION
+
+------------------------------------------------------- FILTROS ---------------------------------------------------------
+CREATE PROCEDURE TRANSACCION_FILTRO
+@TIPO VARCHAR(20)
+
+ AS
+	BEGIN 
+		SELECT * FROM TRANSACCION 
+		WHERE TIPO = @TIPO 
+	 END
+-----------------------------------------------SUMA----------------------------------------------------------------------
+CREATE PROCEDURE CONTADOR
+ AS
+  BEGIN 
+		SELECT COUNT (CODIGO) AS COUNT
+		FROM TRANSACCION
+  END
+
+  CREATE PROCEDURE SUMINGRESO
+ AS
+  BEGIN 
+		SELECT SUM(MONTO) 
+		FROM TRANSACCION WHERE TIPO = 'Ingreso'
+  END
+
+  CREATE PROCEDURE SUMGASTO
+ AS
+  BEGIN 
+		SELECT SUM(MONTO) SUMGASTO
+		FROM TRANSACCION WHERE TIPO = 'GASTO'
+  END
+
+  EXEC CONTADOR
+  EXEC SUMINGRESO
+  EXEC SUMGASTO 
+
+
